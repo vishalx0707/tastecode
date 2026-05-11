@@ -1,0 +1,30 @@
+{
+  "name": "@tastecode/plugin",
+  "version": "0.1.0",
+  "description": "Portable coding-taste plugin for any AI coding agent. Use any agent. Keep your coding taste.",
+  "type": "module",
+  "bin": {
+    "tastecode-plugin": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --import tsx test/adapters.test.ts",
+    "dev": "tsx src/cli.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0"
+  }
+}
