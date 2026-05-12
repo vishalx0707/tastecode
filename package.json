@@ -2,6 +2,30 @@
   "name": "@tastecode/plugin",
   "version": "0.3.0",
   "description": "Portable coding-taste plugin for any AI coding agent. Use any agent. Keep your coding taste.",
+  "keywords": [
+    "ai",
+    "coding-agent",
+    "claude-code",
+    "codex",
+    "cursor",
+    "cline",
+    "aider",
+    "opencode",
+    "cli",
+    "taste",
+    "prompt",
+    "wrapper"
+  ],
+  "homepage": "https://github.com/vishalx0707/tastecode#readme",
+  "bugs": {
+    "url": "https://github.com/vishalx0707/tastecode/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vishalx0707/tastecode.git"
+  },
+  "author": "vishalx0707",
+  "license": "MIT",
   "type": "module",
   "bin": {
     "tastecode": "dist/index.js",
@@ -17,12 +41,14 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test --import tsx test/adapters.test.ts test/prompt-builder.test.ts test/config.test.ts",
     "dev": "tsx src/index.ts",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build && npm test"
   },
   "engines": {
     "node": ">=20"
   },
-  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/node": "^20.11.0",
     "tsx": "^4.7.0",
