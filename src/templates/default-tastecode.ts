@@ -70,4 +70,12 @@ If yes, use the simpler version.
 - Ugly UI.
 - Code that looks fancy but is hard to understand.
 - AI-generated boilerplate that is not needed.
+
+## Learned Rules
+
+<!--
+  TasteCode appends rules here when you run \`tastecode reject "..."\` or
+  \`tastecode accept "..."\` and confirm the promotion prompt. Plain
+  markdown — no hidden state. Edit or delete entries freely.
+-->
 `;

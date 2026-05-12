@@ -6,6 +6,10 @@ import { runUse } from "./commands/use.js";
 import { runInstall } from "./commands/install.js";
 import { runDoctor } from "./commands/doctor.js";
 import { runProviders } from "./commands/providers.js";
+import { runShellInit } from "./commands/shell-init.js";
+import { runReject } from "./commands/reject.js";
+import { runAccept } from "./commands/accept.js";
+import { runLearn } from "./commands/learn.js";
 import { listProviders } from "./providers/index.js";
 
 const HELP = `tastecode — portable coding-taste layer for AI coding agents
@@ -13,17 +17,24 @@ const HELP = `tastecode — portable coding-taste layer for AI coding agents
 Usage:
   tastecode init [--force]
   tastecode use <provider> "<task>"
-  tastecode <provider> "<task>"            (alias for: use <provider>)
+  tastecode <provider> "<task>"                 (alias for: use <provider>)
   tastecode providers
   tastecode install [--all] [--yes]
   tastecode doctor
+  tastecode shell-init [--shell pwsh|bash|zsh] [--providers <a,b,c>]
+  tastecode reject "<reason>" [--provider <name>] [--task <text>] [--yes]
+  tastecode accept "<note>"   [--provider <name>] [--task <text>] [--yes]
+  tastecode learn [--yes] [--select <spec>]
   tastecode help
 
 Examples:
   tastecode init
   tastecode use claude "add a login page"
-  tastecode claude "fix the failing test"
+  tastecode codex "fix the failing test"
   tastecode install --all --yes
+  tastecode shell-init                          # print shell shim snippet
+  tastecode reject "no inline styles, use the tokens"
+  tastecode learn                               # batch promote pending feedback
 
 Define custom providers in tastecode.config.json:
   {
@@ -45,6 +56,11 @@ async function main(): Promise<number> {
       all: { type: "boolean", default: false },
       cwd: { type: "string" },
       help: { type: "boolean", short: "h", default: false },
+      shell: { type: "string" },
+      providers: { type: "string" },
+      provider: { type: "string" },
+      task: { type: "string" },
+      select: { type: "string" },
     },
   });
 
@@ -74,6 +90,26 @@ async function main(): Promise<number> {
       return runInstall({ cwd, yes: values.yes, all: values.all });
     case "doctor":
       return runDoctor(cwd);
+    case "shell-init":
+      return runShellInit({ shell: values.shell, providers: values.providers });
+    case "reject":
+      return runReject({
+        cwd,
+        text: positionals.slice(1).join(" "),
+        provider: values.provider,
+        task: values.task,
+        yes: values.yes,
+      });
+    case "accept":
+      return runAccept({
+        cwd,
+        text: positionals.slice(1).join(" "),
+        provider: values.provider,
+        task: values.task,
+        yes: values.yes,
+      });
+    case "learn":
+      return runLearn({ cwd, yes: values.yes, select: values.select });
     default: {
       const providers = await listProviders(cwd);
       if (providers.some((p) => p.name === command)) {
@@ -92,6 +128,8 @@ main()
     process.exitCode = code;
   })
   .catch((err) => {
-    process.stderr.write(`tastecode: ${err instanceof Error ? err.message : String(err)}\n`);
+    process.stderr.write(
+      `tastecode: ${err instanceof Error ? err.message : String(err)}\n`,
+    );
     process.exitCode = 1;
   });

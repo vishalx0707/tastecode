@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { ADAPTERS } from "../adapters/index.js";
 import { FENCE_START, FENCE_END } from "../lib/fence.js";
 import { listProviders } from "../providers/index.js";
+import { feedbackStatus, getFeedbackPath } from "../core/feedback.js";
 
 export async function runDoctor(cwd: string): Promise<number> {
   console.log("");
@@ -49,6 +50,17 @@ export async function runDoctor(cwd: string): Promise<number> {
       }
       console.log(`  ${a.label.padEnd(12)} ${f.padEnd(28)} ${status}`);
     }
+  }
+  console.log("");
+  console.log("Feedback log:");
+  const fb = await feedbackStatus(cwd);
+  const fbPath = getFeedbackPath(cwd).replace(cwd + "\\", "").replace(cwd + "/", "");
+  if (!fb.exists) {
+    console.log(`  ${fbPath.padEnd(28)} not yet created`);
+  } else {
+    console.log(
+      `  ${fbPath.padEnd(28)} ${fb.total} entries (${fb.promoted} promoted, ${fb.pending} pending)`,
+    );
   }
   console.log("");
   return 0;

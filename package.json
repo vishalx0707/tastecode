@@ -1,7 +1,7 @@
 {
   "name": "@tastecode/plugin",
-  "version": "0.3.0",
-  "description": "Portable coding-taste plugin for any AI coding agent. Use any agent. Keep your coding taste.",
+  "version": "0.4.0",
+  "description": "Portable coding-taste plugin for any AI coding agent. Always-on injection across CLIs + reject-to-learn feedback loop. Use any agent. Keep your coding taste.",
   "keywords": [
     "ai",
     "coding-agent",
@@ -39,7 +39,7 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "test": "node --test --import tsx test/adapters.test.ts test/prompt-builder.test.ts test/config.test.ts",
+    "test": "node --test --import tsx test/adapters.test.ts test/prompt-builder.test.ts test/config.test.ts test/feedback.test.ts test/shell-init.test.ts test/reject-flow.test.ts test/learn-flow.test.ts",
     "dev": "tsx src/index.ts",
     "prepublishOnly": "npm run build && npm test"
   },
