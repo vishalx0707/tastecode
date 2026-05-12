@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { ADAPTERS } from "../adapters/index.js";
 import { FENCE_START, FENCE_END } from "../lib/fence.js";
-import { PROVIDERS } from "../providers/index.js";
+import { listProviders } from "../providers/index.js";
 
 export async function runDoctor(cwd: string): Promise<number> {
   console.log("");
@@ -16,9 +16,12 @@ export async function runDoctor(cwd: string): Promise<number> {
   console.log(`tastecode.md            ${existsSync(tasteFile) ? "found" : "MISSING"}`);
   console.log("");
   console.log("Providers (local CLIs):");
-  for (const p of PROVIDERS) {
+  const providers = await listProviders(cwd);
+  for (const p of providers) {
     const ok = await p.installed();
-    console.log(`  ${p.name.padEnd(10)} ${ok ? "available" : "not installed"}`);
+    console.log(
+      `  ${p.name.padEnd(10)} ${p.source.padEnd(8)} ${ok ? "available" : "not installed"}`,
+    );
   }
   console.log("");
   console.log("Agent pointer files (from `tastecode install`):");

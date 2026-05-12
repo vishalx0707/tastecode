@@ -1,6 +1,6 @@
 import { readTasteFile, looksLikeSecrets } from "../core/taste-file.js";
 import { buildTastePrompt } from "../core/prompt-builder.js";
-import { getProvider, PROVIDERS } from "../providers/index.js";
+import { getProvider, listProviders } from "../providers/index.js";
 import { NOT_INSTALLED_MESSAGE } from "../providers/claude.js";
 
 interface UseOptions {
@@ -10,11 +10,13 @@ interface UseOptions {
 }
 
 export async function runUse(opts: UseOptions): Promise<number> {
-  const provider = getProvider(opts.provider);
+  const provider = await getProvider(opts.cwd, opts.provider);
   if (!provider) {
-    const known = PROVIDERS.map((p) => p.name).join(", ");
+    const all = await listProviders(opts.cwd);
+    const known = all.map((p) => p.name).join(", ") || "(none)";
     console.error(`Unknown provider: ${opts.provider}`);
     console.error(`Known providers: ${known}`);
+    console.error("Add a custom one via tastecode.config.json — see README.");
     return 1;
   }
 
@@ -41,12 +43,17 @@ export async function runUse(opts: UseOptions): Promise<number> {
 
   const prompt = buildTastePrompt(opts.task, taste.content);
 
-  if (provider.name === "claude") {
-    const installed = await provider.installed();
-    if (!installed) {
+  const installed = await provider.installed();
+  if (!installed) {
+    if (provider.name === "claude") {
       console.error(NOT_INSTALLED_MESSAGE);
-      return 1;
+    } else {
+      console.error(
+        `${provider.binary} was not found on PATH.\n` +
+          `Install it, or check the "command" in your tastecode.config.json.`,
+      );
     }
+    return 1;
   }
 
   console.log(`> tastecode use ${provider.name} (${taste.path}, ${prompt.length} chars)`);

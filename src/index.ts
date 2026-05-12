@@ -5,7 +5,8 @@ import { runInit } from "./commands/init.js";
 import { runUse } from "./commands/use.js";
 import { runInstall } from "./commands/install.js";
 import { runDoctor } from "./commands/doctor.js";
-import { PROVIDERS } from "./providers/index.js";
+import { runProviders } from "./commands/providers.js";
+import { listProviders } from "./providers/index.js";
 
 const HELP = `tastecode — portable coding-taste layer for AI coding agents
 
@@ -13,6 +14,7 @@ Usage:
   tastecode init [--force]
   tastecode use <provider> "<task>"
   tastecode <provider> "<task>"            (alias for: use <provider>)
+  tastecode providers
   tastecode install [--all] [--yes]
   tastecode doctor
   tastecode help
@@ -23,8 +25,13 @@ Examples:
   tastecode claude "fix the failing test"
   tastecode install --all --yes
 
-Providers:
-  ${PROVIDERS.map((p) => p.name).join(", ")}
+Define custom providers in tastecode.config.json:
+  {
+    "providers": {
+      "codex":  { "command": "codex",  "args": ["exec", "-"], "stdin": true },
+      "aider":  { "command": "aider",  "args": ["--no-pretty", "--message", "{prompt}"] }
+    }
+  }
 
 Use any AI coding agent. Keep your coding taste.
 `;
@@ -49,8 +56,6 @@ async function main(): Promise<number> {
     return 0;
   }
 
-  const providerNames = new Set(PROVIDERS.map((p) => p.name));
-
   switch (command) {
     case "init":
       return runInit({ cwd, force: values.force });
@@ -63,18 +68,22 @@ async function main(): Promise<number> {
       }
       return runUse({ cwd, provider, task });
     }
+    case "providers":
+      return runProviders(cwd);
     case "install":
       return runInstall({ cwd, yes: values.yes, all: values.all });
     case "doctor":
       return runDoctor(cwd);
-    default:
-      if (providerNames.has(command)) {
+    default: {
+      const providers = await listProviders(cwd);
+      if (providers.some((p) => p.name === command)) {
         const task = positionals.slice(1).join(" ");
         return runUse({ cwd, provider: command, task });
       }
       process.stderr.write(`Unknown command: ${command}\n\n`);
       process.stdout.write(HELP);
       return 1;
+    }
   }
 }
 

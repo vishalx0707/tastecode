@@ -1,6 +1,6 @@
 {
   "name": "@tastecode/plugin",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Portable coding-taste plugin for any AI coding agent. Use any agent. Keep your coding taste.",
   "type": "module",
   "bin": {
@@ -15,7 +15,7 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "test": "node --test --import tsx test/adapters.test.ts test/prompt-builder.test.ts",
+    "test": "node --test --import tsx test/adapters.test.ts test/prompt-builder.test.ts test/config.test.ts",
     "dev": "tsx src/index.ts",
     "prepublishOnly": "npm run build"
   },
