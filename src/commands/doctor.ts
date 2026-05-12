@@ -3,17 +3,25 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { ADAPTERS } from "../adapters/index.js";
 import { FENCE_START, FENCE_END } from "../lib/fence.js";
+import { PROVIDERS } from "../providers/index.js";
 
-export async function runDoctor(cwd: string): Promise<void> {
+export async function runDoctor(cwd: string): Promise<number> {
   console.log("");
-  console.log("TasteCode plugin doctor");
-  console.log("-----------------------");
+  console.log("TasteCode doctor");
+  console.log("----------------");
   console.log(`Project: ${cwd}`);
   console.log("");
 
   const tasteFile = join(cwd, "tastecode.md");
   console.log(`tastecode.md            ${existsSync(tasteFile) ? "found" : "MISSING"}`);
   console.log("");
+  console.log("Providers (local CLIs):");
+  for (const p of PROVIDERS) {
+    const ok = await p.installed();
+    console.log(`  ${p.name.padEnd(10)} ${ok ? "available" : "not installed"}`);
+  }
+  console.log("");
+  console.log("Agent pointer files (from `tastecode install`):");
 
   for (const a of ADAPTERS) {
     for (const f of a.files) {
@@ -36,8 +44,9 @@ export async function runDoctor(cwd: string): Promise<void> {
           status = hasPointer ? "installed" : "exists, no tastecode block";
         }
       }
-      console.log(`${a.label.padEnd(14)} ${f.padEnd(28)} ${status}`);
+      console.log(`  ${a.label.padEnd(12)} ${f.padEnd(28)} ${status}`);
     }
   }
   console.log("");
+  return 0;
 }

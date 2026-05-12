@@ -1,13 +1,12 @@
-# TasteCode Plugin
+# TasteCode
 
-> Use any AI coding agent. Keep your coding taste.
+Stop AI coding agents from overcoding your project.
 
-TasteCode is a portable taste layer for AI coding agents. It drops a single
-`tastecode.md` file into your project and wires it into whichever agents you
-use — Claude Code, Cursor, Cline, Codex CLI, OpenCode, Aider — so they all
-follow the same coding-taste rules.
+TasteCode is a plugin-style taste layer for AI coding agents. It creates a
+`tastecode.md` file and injects your coding preferences into tools like Claude
+Code, Codex CLI, OpenCode, Aider, and other AI coding workflows.
 
-No runtime. No service to install. Just a file the agents read.
+**Use any AI coding agent. Keep your coding taste.**
 
 ## Quickstart
 
@@ -15,26 +14,50 @@ No runtime. No service to install. Just a file the agents read.
 npx @tastecode/plugin init
 ```
 
-This will:
-
-1. Create `tastecode.md` at your project root (from a sensible default template).
-2. Detect which AI coding agents you use.
-3. Write a small pointer file in each agent's native config format so the agent
-   reads `tastecode.md` before coding.
-
-To install pointers for all supported agents regardless of what's detected:
+This creates `tastecode.md` in your project. Edit it to match how you actually
+like to code, then:
 
 ```bash
-npx @tastecode/plugin init --all
+tastecode use claude "add a login page"
 ```
 
-To skip the interactive prompt:
+That wraps the local Claude Code CLI with a prompt that prepends your
+`tastecode.md` rules. You can also use the short alias:
 
 ```bash
-npx @tastecode/plugin init --yes
+tastecode claude "fix the failing test"
 ```
 
-## What gets written
+## Commands
+
+| Command                                    | Purpose |
+|--------------------------------------------|---------|
+| `tastecode init`                           | Create `tastecode.md` from a template |
+| `tastecode init --force`                   | Overwrite an existing `tastecode.md` |
+| `tastecode use <provider> "<task>"`        | Inject taste, run via the provider's CLI |
+| `tastecode <provider> "<task>"`            | Short alias for `use` |
+| `tastecode install [--all] [--yes]`        | Drop pointer files so agents read `tastecode.md` natively |
+| `tastecode doctor`                         | Show installed providers and pointer status |
+
+## How `tastecode use` works
+
+1. Read `tastecode.md` (or `.tastecode/taste.md` as fallback).
+2. Build an enhanced prompt:
+   - TasteCode preamble
+   - Full taste file contents
+   - Your task
+   - Strict rules: minimal edits, no overcoding, match project style
+3. Spawn the provider's local CLI (`claude -p "<prompt>"` for Claude) and
+   stream its output back to you.
+
+TasteCode does not send anything to a model directly. It only wraps the local
+CLI you already have installed.
+
+## How `tastecode install` works (optional)
+
+If you'd rather have each agent read `tastecode.md` on its own — without going
+through `tastecode use` — run `tastecode install`. It drops a small pointer
+file into each detected agent's native config:
 
 | Agent       | File                                  |
 |-------------|---------------------------------------|
@@ -45,24 +68,38 @@ npx @tastecode/plugin init --yes
 | OpenCode    | `AGENTS.md` (shared with Codex)       |
 | Aider       | `CONVENTIONS.md`                      |
 
-Each pointer is wrapped in fence comments
-(`<!-- tastecode:start -->` / `<!-- tastecode:end -->`) so re-running `init`
-updates in place instead of duplicating content.
+Each pointer is fenced (`<!-- tastecode:start --> ... <!-- tastecode:end -->`)
+so re-running `install` updates in place instead of duplicating content.
 
 ## Status
 
-```bash
-npx @tastecode/plugin doctor
-```
+Experimental v0.2.
 
-Lists which agents are wired up and which files exist.
+**Currently supports:**
+- `tastecode.md` generation
+- Claude Code CLI wrapper (`tastecode use claude`)
+- Pointer-file installs for 6 agents
 
-## Editing your taste
+**Planned:**
+- Codex CLI provider
+- OpenCode provider
+- Aider provider
+- OpenRouter / Ollama / direct-API providers
+- MCP integration
+- accepted / rejected diff learning
 
-The only file you need to edit is `tastecode.md`. Rewrite it to match how you
-actually like to code — language, frameworks, formatting, what to avoid. The
-default template is conservative: keep things simple, avoid overcoding, match
-the existing project style.
+## Safety
+
+TasteCode:
+
+- Reads only `tastecode.md` and its fallbacks. Never `.env`, `.git`, or
+  `node_modules`.
+- Refuses to send `tastecode.md` to a model if it looks like it contains
+  secrets (API keys, tokens).
+- Does not modify any source files itself. The wrapped agent does, under its
+  own permission settings.
+- Does not contact any service. The only network calls are made by the
+  underlying provider CLI (Claude Code, etc.).
 
 ## License
 
