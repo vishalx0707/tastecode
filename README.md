@@ -295,7 +295,7 @@ telling that agent to read `tastecode.md` before coding:
 
 | Agent | File written |
 |---|---|
-| Claude Code | `CLAUDE.md` |
+| Claude Code | `CLAUDE.md` + `.claude/commands/tastecode-*.md` |
 | Cursor | `.cursor/rules/tastecode.mdc` |
 | Cline | `.clinerules/tastecode.md` |
 | Codex CLI | `AGENTS.md` |
@@ -305,6 +305,24 @@ telling that agent to read `tastecode.md` before coding:
 Each pointer is wrapped in fence comments
 (`<!-- tastecode:start --> ... <!-- tastecode:end -->`) so re-running
 `install` updates in place — never duplicates.
+
+### Claude Code slash commands
+
+For Claude Code specifically, `install` also drops slash-command files under
+`.claude/commands/`, so TasteCode is reachable from inside the Claude REPL:
+
+| Slash command | What it runs |
+|---|---|
+| `/tastecode-reject <reason>` | `tastecode reject "<reason>"` |
+| `/tastecode-accept <note>` | `tastecode accept "<note>"` |
+| `/tastecode-learn` | `tastecode learn` |
+| `/tastecode-init` | `tastecode init` |
+| `/tastecode-doctor` | `tastecode doctor` |
+| `/tastecode-providers` | `tastecode providers` |
+
+These show up in Claude Code's slash-command menu the next time you open the
+project. Each is a thin shell-out to the `tastecode` binary — make sure it's
+on your `PATH` (any global or `npx` install works).
 
 ---
 
