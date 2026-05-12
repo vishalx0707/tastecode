@@ -19,6 +19,7 @@ No accounts. No cloud. No new agent — TasteCode wraps the tools you already us
 ## Table of contents
 
 - [Install](#install)
+- [Updating](#updating)
 - [60-second tour](#60-second-tour)
 - [Commands](#commands)
 - [Configure any tool — `tastecode.config.json`](#configure-any-tool--tastecodeconfigjson)
@@ -49,6 +50,29 @@ tastecode init
 
 **Requirements:** Node 20+, plus whatever AI coding CLI you want to wrap
 (Claude Code, Codex, Aider, etc.) on your `PATH`.
+
+---
+
+## Updating
+
+**If you use `npx`:** pin to the latest version on next call —
+
+```bash
+npx @tastecode/plugin@latest <command>
+```
+
+**If you installed globally:**
+
+```bash
+npm update -g @tastecode/plugin
+# or force the latest:
+npm i -g @tastecode/plugin@latest
+```
+
+After updating, re-run `tastecode install` in each project so the fenced
+`## TasteCode` block in `CLAUDE.md` / `AGENTS.md` / `.cursor/rules/…` /
+`CONVENTIONS.md` picks up any improvements. The fence guard makes this
+idempotent — no duplicate sections.
 
 ---
 
