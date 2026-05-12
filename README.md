@@ -1,5 +1,9 @@
 # TasteCode
 
+[![npm version](https://img.shields.io/npm/v/@tastecode/plugin?color=brightgreen&label=npm)](https://www.npmjs.com/package/@tastecode/plugin)
+[![license](https://img.shields.io/npm/l/@tastecode/plugin)](./LICENSE)
+[![node](https://img.shields.io/node/v/@tastecode/plugin)](https://nodejs.org)
+
 > **Use any AI coding agent. Keep your coding taste.**
 
 TasteCode stops AI coding agents from overcoding your project. It's a small
